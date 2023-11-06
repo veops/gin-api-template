@@ -4,22 +4,21 @@ import (
 	"context"
 	"encoding/gob"
 	"fmt"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"net/http"
 	"os"
 	"time"
-
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
-	"github.com/gin-gonic/gin"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/spf13/viper"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"app/pkg/conf"
 	"app/pkg/logger"
 	"app/pkg/server/router/middleware"
 	"app/pkg/util"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
+	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/spf13/viper"
 )
 
 var routeGroup []*GroupRoute
@@ -76,9 +75,6 @@ func setupRouter() *gin.Engine {
 		middleware.LogRequest(),
 		middleware.GinLogger(logger.L),
 		middleware.GinRecovery(logger.L, true))
-	// swagger
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
 	// sso
 	gob.Register(map[string]any{}) // important!
 	store := cookie.NewStore([]byte(viper.GetString("gateway.secretKey")))
@@ -108,5 +104,7 @@ func setupRouter() *gin.Engine {
 		}
 	}
 	r.Handle("GET", "/metrics", gin.WrapH(promhttp.Handler()))
+	// swagger
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	return r
 }

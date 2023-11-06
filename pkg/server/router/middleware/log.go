@@ -69,7 +69,10 @@ func GinRecovery(logger *zap.Logger, stack bool) gin.HandlerFunc {
 						zap.Any("error", err),
 						zap.String("request", string(httpRequest)),
 					)
-					c.Error(err.(error))
+					err := c.Error(err.(error))
+					if err != nil {
+						logger.Error(err.Error())
+					}
 					c.Abort()
 					return
 				}
@@ -122,7 +125,6 @@ func LogRequest() gin.HandlerFunc {
 			}
 		}
 		c.Next()
-		return
 	}
 }
 

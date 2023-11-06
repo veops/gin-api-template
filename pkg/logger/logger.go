@@ -14,7 +14,8 @@ import (
 )
 
 var (
-	L *zap.Logger
+	L           *zap.Logger
+	AtomicLevel = zap.NewAtomicLevel()
 )
 
 func Init(ctx context.Context, cfg *conf.LogConfig) (err error) {
@@ -66,12 +67,13 @@ func getLogWriter(cfg *conf.LogConfig) zapcore.WriteSyncer {
 func initLogger(cfg *conf.LogConfig) (err error) {
 	writeSyncer := getLogWriter(cfg)
 	encoder := getEncoder(cfg.Format)
-	l := new(zapcore.Level)
-	err = l.UnmarshalText([]byte(cfg.Level))
+	level, err := zap.ParseAtomicLevel(cfg.Level)
 	if err != nil {
-		return
+		return err
 	}
-	core := zapcore.NewCore(encoder, writeSyncer, l)
+	AtomicLevel.SetLevel(level.Level())
+
+	core := zapcore.NewCore(encoder, writeSyncer, AtomicLevel)
 	logger := zap.New(core, zap.AddCaller())
 	zap.ReplaceGlobals(logger)
 	return
