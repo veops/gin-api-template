@@ -1,0 +1,117 @@
+// Package app
+
+package cmd
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"github.com/gin-gonic/gin"
+	"github.com/oklog/run"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+
+	"app/pkg/conf"
+	"app/pkg/logger"
+	"app/pkg/server/router"
+	"app/pkg/server/storage/cache/local"
+	"app/pkg/server/storage/cache/redis"
+	"app/pkg/server/storage/db/mysql"
+)
+
+const (
+	componentServer = "./server"
+)
+
+var (
+	configFilePath string
+)
+
+var cmdRun = &cobra.Command{
+	Use:     "run",
+	Example: fmt.Sprintf("%s run -c apps", componentServer),
+	Short:   "run",
+	Long:    `a run test`,
+	Args:    cobra.MinimumNArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+		Run()
+		os.Exit(0)
+	},
+}
+
+func NewServerCommand() *cobra.Command {
+	command := &cobra.Command{
+		Use: componentServer,
+	}
+
+	cmdRun.PersistentFlags().StringVarP(&configFilePath, "config", "c", "./", "config path")
+	command.AddCommand(cmdRun)
+	return command
+}
+
+func Run() {
+	parseConfig(configFilePath)
+	gr := run.Group{}
+	ctx, logCancel := context.WithCancel(context.Background())
+	if err := logger.Init(ctx, conf.Cfg.Log); err != nil {
+		panic(err)
+	}
+	if err := mysql.Init(conf.Cfg.Mysql); err != nil {
+		panic(err)
+	}
+	if err := redis.Init(conf.Cfg.Redis); err != nil {
+		panic(err)
+	}
+	if err := local.Init(); err != nil {
+		panic(err)
+	}
+
+	{
+		// Termination handler.
+		term := make(chan os.Signal, 1)
+		signal.Notify(term, os.Interrupt, syscall.SIGTERM)
+		gr.Add(
+			func() error {
+				<-term
+				logger.L.Warn("Received SIGTERM, exiting gracefully...")
+				return nil
+			},
+			func(err error) {},
+		)
+	}
+	{
+		cancel := make(chan struct{})
+		gr.Add(func() error {
+			gin.SetMode(conf.Cfg.Mode)
+			srv := router.Server(conf.Cfg)
+			router.GracefulExit(srv, cancel)
+			return nil
+		}, func(err error) {
+			close(cancel)
+		})
+	}
+
+	if err := gr.Run(); err != nil {
+		logger.L.Error(err.Error())
+	}
+
+	logger.L.Info("exiting")
+	logCancel()
+}
+
+func parseConfig(filePath string) {
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(filePath)
+	viper.AddConfigPath(".")
+	err := viper.ReadInConfig()
+	if err != nil { // Handle errors reading the config file
+		panic(fmt.Errorf("fatal error config file: %s", err))
+	}
+	if err = viper.Unmarshal(&conf.Cfg); err != nil {
+		panic(fmt.Sprintf("parse config from config.yaml failed:%s", err))
+	}
+}
