@@ -1,10 +1,4 @@
 // Package middleware
-/**
-Copyright (c) The Authors.
-* @Author: feng.xiang
-* @Date: 2023/11/2 19:49
-* @Desc:
-*/
 package middleware
 
 import (
@@ -35,7 +29,7 @@ func Auth() gin.HandlerFunc {
 		//session := map[string]any{}
 		var err error
 		var ok bool
-		if conf.Cfg.Auth.Acl != nil {
+		if conf.Cfg.Auth.Acl != nil && conf.Cfg.Auth.Acl.Url != "" {
 			err, ok = authAcl(c)
 		} else {
 			// TODO: add your auth here
@@ -49,7 +43,6 @@ func Auth() gin.HandlerFunc {
 			return
 		}
 		c.Next()
-		return
 	}
 }
 

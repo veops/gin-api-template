@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	componentServer = "./server"
+	componentServer = "./cmd"
 )
 
 var (
@@ -57,16 +57,20 @@ func Run() {
 	gr := run.Group{}
 	ctx, logCancel := context.WithCancel(context.Background())
 	if err := logger.Init(ctx, conf.Cfg.Log); err != nil {
-		panic(err)
+		fmt.Println("err init failed", err)
+		os.Exit(1)
 	}
 	if err := mysql.Init(conf.Cfg.Mysql); err != nil {
-		panic(err)
+		logger.L.Error("mysql init failed: " + err.Error())
+		os.Exit(1)
 	}
 	if err := redis.Init(conf.Cfg.Redis); err != nil {
-		panic(err)
+		logger.L.Error("redis init failed: " + err.Error())
+		os.Exit(1)
 	}
 	if err := local.Init(); err != nil {
-		panic(err)
+		logger.L.Error("local init failed: " + err.Error())
+		os.Exit(1)
 	}
 
 	{

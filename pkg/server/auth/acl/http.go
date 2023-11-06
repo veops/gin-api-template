@@ -40,11 +40,9 @@ func GetAclToken(ctx context.Context) (res string, err error) {
 		SetBody(map[string]any{"app_id": aclConfig.AppId, "secret_key": secretKey}).
 		SetResult(&data).
 		Post(url)
-
 	if err = HandleErr(err, resp, func(dt map[string]any) bool { return dt["token"] != "" }); err != nil {
 		return
 	}
-
 	res = data["token"]
 	_, err = redis.RC.SetNX(ctx, "aclToken", res, time.Hour).Result()
 	return

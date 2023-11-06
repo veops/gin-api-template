@@ -1,6 +1,8 @@
 package router
 
 import (
+	"app/pkg/logger"
+	"app/pkg/server/router/middleware"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -18,7 +20,6 @@ var (
 			Pattern: "/-/health",
 			HandlerFunc: func(ctx *gin.Context) {
 				ctx.String(http.StatusOK, "OK")
-				return
 			},
 		},
 		{
@@ -26,7 +27,14 @@ var (
 			Method:  "GET",
 			Pattern: "/favicon.ico",
 			HandlerFunc: func(ctx *gin.Context) {
-				return
+			},
+		},
+		{
+			Name:    "change the log level",
+			Method:  "PUT",
+			Pattern: "/-/log/level",
+			HandlerFunc: func(ctx *gin.Context) {
+				logger.AtomicLevel.ServeHTTP(ctx.Writer, ctx.Request)
 			},
 		},
 	}
@@ -37,7 +45,7 @@ var (
 			Method:      "GET",
 			Pattern:     "hello",
 			HandlerFunc: c.Hello,
-			Middleware:  gin.HandlersChain{},
+			Middleware:  gin.HandlersChain{middleware.Auth()},
 		},
 	}
 )
