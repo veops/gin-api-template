@@ -1,6 +1,13 @@
 [中文](README_cn.md)
+
+<h3 align="center">Simple project template base on gin framework</h3>
+
+[![Licence](https://img.shields.io/badge/Licence-Apache-brightgreen)](https://github.com/veops/gin-api-template/blob/main/LICENSE)
+[![API](https://img.shields.io/badge/API-gin-blue)](https://github.com/gin-gonic/gin)
+[![Log](https://img.shields.io/badge/Log-zap-green)](https://github.com/uber-go/zap)
+
 ## Overview
-This is a simple project construction template based on the gin framework. 
+A simple project construction template based on the gin framework.
 
 If you want to quickly build a backend project using golang, this template is perfect for you.
 You can directly use this project and quickly develop your own project based on it.
