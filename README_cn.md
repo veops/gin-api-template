@@ -6,6 +6,7 @@
 [![Log](https://img.shields.io/badge/Log-zap-green)](https://github.com/uber-go/zap)
 [![Golang](https://img.shields.io/badge/go-1.18+-blue)](https://go.dev/dl/)
 </div>
+
 ------------------------------
 
 [English](README.md)
@@ -63,7 +64,7 @@
 ## 快速开始
 ### 第一步, 克隆项目
 ```sh
-git clone https://github.com/veops/gin-api-template
+git clone git@github.com:veops/gin-api-template.git
 ```
 ### 第二部, 修改配置
 ```sh

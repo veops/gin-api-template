@@ -6,6 +6,7 @@
 [![Log](https://img.shields.io/badge/Log-zap-green)](https://github.com/uber-go/zap)
 [![Golang](https://img.shields.io/badge/go-1.18+-blue)](https://go.dev/dl/)
 </div>
+
 ------------------------------
 
 [中文](README_cn.md)
@@ -66,7 +67,8 @@ You can directly use this project and quickly develop your own project based on 
 ## Getting Started
 ### Step 1. Clone the project
 ```sh
-git clone https://github.com/veops/gin-api-template
+git clone git@github.com:veops/gin-api-template.git
+
 ```
 ### Step 2. Modify config file
 ```sh
