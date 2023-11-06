@@ -1,50 +1,57 @@
+<h3 align="center">基于gin框架的api项目模板</h3>
+<div align="center">
+
+[![Licence](https://img.shields.io/badge/Licence-Apache-brightgreen)](https://github.com/veops/gin-api-template/blob/main/LICENSE)
+[![API](https://img.shields.io/badge/API-gin-blue)](https://github.com/gin-gonic/gin)
+[![Log](https://img.shields.io/badge/Log-zap-green)](https://github.com/uber-go/zap)
+[![Golang](https://img.shields.io/badge/go-1.18+-blue)](https://go.dev/dl/)
+</div>
+------------------------------
+
 [English](README.md)
 ## 概览
 
 这是一个基于gin框架的简单项目建设模板。如果你想快速使用golang构建后端项目，这个模板非常适合你。
 你可以直接使用该项目，并在此基础上快速开发你自己的项目。
 
-> 支持的golang版本： golang 1.18+
-
 ## 项目架构
-- cmd
-    - main.go  `项目启动的入口`
-    - apps `子项目目录`
-        - server.go `某子项目启动`
-        - config.example.yaml `启动的配置文件样例`
-- pkg `项目核心代码包`
-    - conf
-        - conf.go `全局的配置设置`
-    - logger
-        - logger.go `日志的设置`
-    - util  `放置各种公用的函数、工具等`
-        - util.go
-    - server `项目的核心逻辑块， 如果是多个子模块，可以建多个不同的目录，这里示例中建立一个server目录`
-        - auth `认证模块`
-            - acl `默认的acl认证`
-            - xxx  `任何其他的认证建立一个单独的目录`
-        - controller `控制器模块`
-            - controller.go `一个全局controller的定义`
-            - hello.go `一个api样例，每种类型的api接口，建立一个单独的文件，这样条理比较清晰`
-        - model `存储结构的配置，各种数据库存储的model结构配置，如数据库的各个字段的定义等`
-        - router `路由的各种定义`
-            - router.go `路由全局配置`
-            - routers.go `各种路由的配置,api代码逻辑主要在这里配置,`
-            - middleware `各种中间件的的定义`
-                - auth.go `认证中间件`
-                - cache.go `缓存中间件`
-                - log.log `日志中间件`
-                - ...
-        - storage `后端存储的实现`
-            - cache `缓存实现`
-                - local `内存存储`
-                - redis `redis 存储`
-            - db `各种数据库的存储`
-                - mysql `对接各种数据库，每个数据库一个目录`
-- go.mod
-- READM.md
-- ...
 
+``` shell
+├── cmd
+│   ├── apps # 子项目目录`
+│   │   ├── config.example.yaml # 启动的配置文件样例
+│   │   └── server.go # 某子项目启动
+│   └── main.go # 项目启动的入口
+└── pkg  # 项目核心代码包 
+    ├── conf
+    │   └── conf.go # 全局的配置设置 
+    ├── docs # 各种文档
+    ├── logger # 日志的设置
+    ├── server # 项目的核心逻辑块， 如果是多个子模块，可以建多个不同的目录，这里示例中建立一个server目录
+    │   ├── auth # 认证模块 
+    │   │   └── acl # 默认的acl认证
+    │   ├── controller # 控制器模块
+    │   │   ├── controller.go # 一个全局controller的定义
+    │   │   └── hello.go # 一个api样例，每种类型的api接口，建立一个单独的文件，这样条理比较清晰 
+    │   ├── model # 存储结构的配置，各种数据库存储的model结构配置，如数据库的各个字段的定义等
+    │   │   └── hello.go
+    │   ├── router # 路由的各种定义
+    │   │   ├── middleware # 各种中间件的的定义
+    │   │   │   ├── auth.go # 认证
+    │   │   │   ├── cache.go # 缓存
+    │   │   │   ├── log.go # 日志
+    │   │   │   └── ... 
+    │   │   ├── router.go # 路由全局配置
+    │   │   └── routers.go # 各种路由的配置,api代码逻辑主要在这里配置
+    │   └── storage # 后端存储的实现
+    │       ├── cache # 缓存实现
+    │       │   ├── local # 内存
+    │       │   └── redis # reids
+    │       └── db # 各种数据库的存储
+    │           └── mysql
+    └── util # 放置各种公用的函数、工具等
+        └── util.go
+```
 
 ## 特点
 - 项目启动使用cobra进行命令行启动。
@@ -60,17 +67,18 @@ git clone https://github.com/veops/gin-api-template
 ```
 ### 第二部, 修改配置
 ```sh
-cd gin-api-template/apps
-cp config.example.yaml config.yaml
-# modify config.yaml
+cd gin-api-template/cmd
+cp apps/config.example.yaml apps/config.yaml 
+# 修改config.yaml中的配置
 ```
 ### 第三部, 构建，运行项目
-```go build cmd/main.go 
-./main run -c ./cmd/apps
+```
+go build -o server main.go 
+./server run -c apps
 ```
 ### 第四部， 测试
-- 浏览器或者终端访问 http://localhost/-/health 返回 `OK`
-- 访问 http://localhost/api/v1/hello 返回
+- 浏览器或者终端访问 http://localhost:8080/-/health 返回 `OK`
+- 访问 http://localhost:8080/api/v1/hello 返回
 ```json
 {
   "code":0,

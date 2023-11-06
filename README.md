@@ -1,11 +1,14 @@
-[中文](README_cn.md)
-
-<h3 align="center">Simple project template base on gin framework</h3>
+<h3 align="center">A simple project template based on gin framework</h3>
+<div align="center">
 
 [![Licence](https://img.shields.io/badge/Licence-Apache-brightgreen)](https://github.com/veops/gin-api-template/blob/main/LICENSE)
 [![API](https://img.shields.io/badge/API-gin-blue)](https://github.com/gin-gonic/gin)
 [![Log](https://img.shields.io/badge/Log-zap-green)](https://github.com/uber-go/zap)
+[![Golang](https://img.shields.io/badge/go-1.18+-blue)](https://go.dev/dl/)
+</div>
+------------------------------
 
+[中文](README_cn.md)
 ## Overview
 A simple project construction template based on the gin framework.
 
@@ -13,43 +16,45 @@ If you want to quickly build a backend project using golang, this template is pe
 You can directly use this project and quickly develop your own project based on it.
 
 ## Architecture Overview
-- cmd
-    - main.go  `The entpoint for starting the project.`
-    - apps `Subdirectory for sub-projects`
-        - server.go `Starts a specific sub-project`
-        - config.example.yaml `Example configuration file for startup`
-- pkg `Core code package of the project`
-    - conf
-        - conf.go `Global configuration settings`
-    - logger
-        - logger.go `Logging settings`
-    - util  `Contains various common functions and utilities`
-      - util.go
-    - server `Core logic block of the project. If there are multiple sub-modules, multiple directories can be created. Here is an example of a server directory is provided.`
-        - auth `Authentication module`
-            - acl `Default ACL authentication`
-            - xxx  `Any other authentication can be placed in a separate directory, such as ldap`
-        - controller `Controller module`
-            - controller.go `Definition of a global controller`
-            - hello.go `An example API. Each type of API interface should have a separate file for better organization.`
-        - model `Configuration of storage structures, including model configurations for various database storages, such as definitions of database fields, etc.`
-        - router `Various router definitions`
-          - router.go `Global router configuration`
-          - routers.go `Configuration of various routes. The main logic of the API code is configured here.`
-          - middleware `Definition of various middlewares`
-            - auth.go `Authentication middleware`
-            - cache.go `Cache middleware`
-            - log.log `Logging middleware`
-            - ...
-        - storage `Implementation of backend storage`
-            - cache `Cache implementation`
-                - local `In-memory storage`
-                - redis `Redis storage`
-            - db `Storage for various databases`
-              - mysql `Integration with various databases, with each database having its own directory`
-- go.mod
-- READM.md
-- ...
+
+
+``` shell
+├── cmd
+│   ├── apps # Subdirectory for sub-projects`
+│   │   ├── config.example.yaml # Example configuration file for startup
+│   │   └── server.go # Starts a specific sub-project`
+│   └── main.go # The entpoint for starting the project.
+└── pkg  # Core code package of the project`
+    ├── conf
+    │   └── conf.go # Global configuration settings` 
+    ├── docs # various documents
+    ├── logger # Logging settings
+    ├── server # Core logic block of the project. If there are multiple sub-modules, multiple directories can be created. Here is an example of a server directory is provided.
+    │   ├── auth # Authentication module` 
+    │   │   └── acl # Default ACL authentication
+    │   │   └── ... # Any other authentication can be placed in a separate directory, such as ldap 
+    │   ├── controller # Controller module`
+    │   │   ├── controller.go # Definition of a global controller
+    │   │   └── hello.go # An example API. Each type of API interface should have a separate file for better organization. 
+    │   ├── model # Configuration of storage structures, including model configurations for various database storages, such as definitions of database fields, etc.
+    │   │   └── hello.go
+    │   ├── router # Various router definitions
+    │   │   ├── middleware # Definition of various middlewares
+    │   │   │   ├── auth.go # Authentication
+    │   │   │   ├── cache.go # Cache
+    │   │   │   ├── log.go # Logging
+    │   │   │   └── ... 
+    │   │   ├── router.go # Global router configuration
+    │   │   └── routers.go # Configuration of various routes. The main logic of the API code is configured here.
+    │   └── storage # Implementation of backend storage`
+    │       ├── cache # Cache implementation` 
+    │       │   ├── local # In-memory storage
+    │       │   └── redis # Redis storage
+    │       └── db # Storage for various databases
+    │           └── mysql
+    └── util # Contains various common functions and utilities
+        └── util.go
+```
 
 ## Features
 - Cobra for command-line startup.
@@ -65,17 +70,18 @@ git clone https://github.com/veops/gin-api-template
 ```
 ### Step 2. Modify config file
 ```sh
-cd gin-api-template/apps
-cp config.example.yaml config.yaml
+cd gin-api-template/cmd
+cp apps/config.example.yaml apps/config.yaml 
 # modify config.yaml
 ```
 ### Step 3. Build and run the project
-```go build cmd/main.go 
-./main run -c ./cmd/apps
+```
+go build -o server main.go 
+./server run -c apps
 ```
 ### Step 4. Validation
-- Access address `http://localhost/-/health` by Browser or terminal, the response is `OK`
-- Access address `http://localhost/api/v1/hello` the response as follows: 
+- Access address `http://localhost:8080/-/health` by Browser or terminal, the response is `OK`
+- Access address `http://localhost:8080/api/v1/hello` the response as follows: 
 ```json
 {
   "code":0,
@@ -102,7 +108,7 @@ cp config.example.yaml config.yaml
 
 ### What is ACL
 
-> 1. ACL is a resource manage server. Please check defails here [https://github.com/veops/acl](https://github.com/veops/acl)
+> 1. A role-based resource permission management service. Please check defails here [https://github.com/veops/acl](https://github.com/veops/acl)
 
 ### How to use my prefered database
 > 1. Since this project is a common template and cohices of db is much different in different conditions, we did not provide a default one, the folder of mysql is just used to demonstrate.
