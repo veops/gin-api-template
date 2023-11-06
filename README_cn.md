@@ -83,7 +83,6 @@ cp config.example.yaml config.yaml
 
 ## 常见问题解答
 ### 如何添加新的路由（例如API）？
-Summarizing.
 > 1. 在pkg/server/controller中编写你自己的处理程序，就像hello.go所做的那样。
 > 2. 将你的处理程序注册到pkg/server/router/routes.go中的路由中。 
 ### 如何添加新的中间件？
