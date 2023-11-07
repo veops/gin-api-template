@@ -4,28 +4,29 @@ import (
 	"context"
 	"encoding/gob"
 	"fmt"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 	"net/http"
 	"os"
 	"time"
 
-	"app/pkg/conf"
-	"app/pkg/logger"
-	"app/pkg/server/router/middleware"
-	"app/pkg/util"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/viper"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
+	"app/pkg/conf"
+	"app/pkg/logger"
+	"app/pkg/server/router/middleware"
+	"app/pkg/util"
 )
 
 var routeGroup []*GroupRoute
 
 func Server(cfg *conf.ConfigYaml) *http.Server {
-	//gin.DefaultWriter = logger.L
 	routeConfig()
+
 	srv := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", cfg.Http.Host, cfg.Http.Port),
 		Handler: setupRouter(),
@@ -37,12 +38,14 @@ func Server(cfg *conf.ConfigYaml) *http.Server {
 			os.Exit(1)
 		}
 	}()
+
 	logger.L.Info(fmt.Sprintf("start on server:%s", srv.Addr))
 	return srv
 }
 
 func GracefulExit(srv *http.Server, ch chan struct{}) {
 	<-ch
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
@@ -88,6 +91,7 @@ func setupRouter() *gin.Engine {
 		for _, gMiddleware := range gRoute.GroupMiddleware {
 			routeGroupsMap[gRoute.Prefix].Use(gMiddleware)
 		}
+
 		for _, subRoute := range gRoute.SubRoutes {
 			length := len(subRoute.Middleware) + 2
 			routes := make([]any, length)

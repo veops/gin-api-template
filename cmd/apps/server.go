@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	componentServer = "./cmd"
+	componentServer = "./server"
 )
 
 var (
@@ -56,18 +56,22 @@ func Run() {
 	parseConfig(configFilePath)
 	gr := run.Group{}
 	ctx, logCancel := context.WithCancel(context.Background())
+
 	if err := logger.Init(ctx, conf.Cfg.Log); err != nil {
 		fmt.Println("err init failed", err)
 		os.Exit(1)
 	}
+
 	if err := mysql.Init(conf.Cfg.Mysql); err != nil {
 		logger.L.Error("mysql init failed: " + err.Error())
 		os.Exit(1)
 	}
+
 	if err := redis.Init(conf.Cfg.Redis); err != nil {
 		logger.L.Error("redis init failed: " + err.Error())
 		os.Exit(1)
 	}
+
 	if err := local.Init(); err != nil {
 		logger.L.Error("local init failed: " + err.Error())
 		os.Exit(1)
@@ -111,10 +115,12 @@ func parseConfig(filePath string) {
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(filePath)
 	viper.AddConfigPath(".")
+
 	err := viper.ReadInConfig()
 	if err != nil { // Handle errors reading the config file
 		panic(fmt.Errorf("fatal error config file: %s", err))
 	}
+
 	if err = viper.Unmarshal(&conf.Cfg); err != nil {
 		panic(fmt.Sprintf("parse config from config.yaml failed:%s", err))
 	}

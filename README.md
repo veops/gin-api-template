@@ -25,10 +25,11 @@ You can directly use this project and quickly develop your own project based on 
 │   │   ├── config.example.yaml # Example configuration file for startup
 │   │   └── server.go # Starts a specific sub-project`
 │   └── main.go # The entpoint for starting the project.
+├── docs # various documents
+│   └── images
 └── pkg  # Core code package of the project`
     ├── conf
     │   └── conf.go # Global configuration settings` 
-    ├── docs # various documents
     ├── logger # Logging settings
     ├── server # Core logic block of the project. If there are multiple sub-modules, multiple directories can be created. Here is an example of a server directory is provided.
     │   ├── auth # Authentication module` 
@@ -58,11 +59,11 @@ You can directly use this project and quickly develop your own project based on 
 ```
 
 ## Features
-- Cobra for command-line startup.
-- Uses YAML format for configuration files.
-- Logging is done using Zap, which provides logging output and log rotation functionalities.
-- Encapsulates router configuration.
-- Encapsulates multiple middlewares.
+- **Cobra** for command-line startup.
+- Uses **YAML** format for configuration files.
+- Logging is done using Zap, which provides **logging output** , **log rotation** , **Dynamically modify the log output level** .
+- **router configuration**.
+- **multiple middlewares**.
 
 ## Getting Started
 ### Step 1. Clone the project
@@ -81,9 +82,28 @@ cp apps/config.example.yaml apps/config.yaml
 go build -o server main.go 
 ./server run -c apps
 ```
+
+
 ### Step 4. Validation
-- Access address `http://localhost:8080/-/health` by Browser or terminal, the response is `OK`
-- Access address `http://localhost:8080/api/v1/hello` the response as follows: 
+> Verify any one of the following is normal.
+- **Service availability check.**, **Must-have as an API service.**
+```
+curl -X GET http://localhost:8080/-/health
+```
+response is: `OK`
+- **Dynamically modify the log level.**. This API is convenient for adjusting the log output level dynamically without the need to restart the service, making it easier to troubleshoot issues when encountered.
+```
+curl -X PUT localhost:8080/-/log/level -H "Content-Type: application/json" -d '{"level":"debug"}'
+```
+response is:
+```json
+{"level":"debug"}
+```
+- Regular API validation.
+```shell
+curl -X GET http://localhost:8080/api/v1/hello
+```
+response is:
 ```json
 {
   "code":0,

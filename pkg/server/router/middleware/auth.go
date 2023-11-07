@@ -26,9 +26,9 @@ func init() {
 
 func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		//session := map[string]any{}
 		var err error
 		var ok bool
+
 		if conf.Cfg.Auth.Acl != nil && conf.Cfg.Auth.Acl.Url != "" {
 			err, ok = authAcl(c)
 		} else {
@@ -42,12 +42,14 @@ func Auth() gin.HandlerFunc {
 			})
 			return
 		}
+
 		c.Next()
 	}
 }
 
 func authAcl(ctx *gin.Context) (error, bool) {
 	session := &acl.Session{}
+
 	sess, err := ctx.Cookie("session")
 	if err == nil {
 		s := NewSignature(conf.Cfg.SecretKey, "cookie-session", "", "hmac", nil, nil)
@@ -55,10 +57,12 @@ func authAcl(ctx *gin.Context) (error, bool) {
 		if err != nil {
 			return err, false
 		}
+
 		err = json.Unmarshal(content, &session)
 		if err != nil {
 			return err, false
 		}
+
 		ctx.Set("session", session)
 		return nil, true
 	}

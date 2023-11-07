@@ -30,6 +30,7 @@ func GinLogger(logger *zap.Logger) gin.HandlerFunc {
 		start := time.Now()
 		path := c.Request.URL.Path
 		query := c.Request.URL.RawQuery
+
 		c.Next()
 
 		if !lo.Contains(NotLogUrls, path) {
@@ -100,10 +101,12 @@ func GinRecovery(logger *zap.Logger, stack bool) gin.HandlerFunc {
 func LogRequest() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if !lo.Contains([]string{"GET", "HEAD"}, c.Request.Method) {
+
 			data := map[string]any{}
 			bodyBytes, _ := io.ReadAll(c.Request.Body)
 			_ = c.Request.Body.Close()
 			c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
 			if err := json.Unmarshal(bodyBytes, &data); err != nil {
 				if valid, err := permissionCheck(c, data); err != nil {
 					c.AbortWithStatusJSON(http.StatusBadRequest,
@@ -115,6 +118,7 @@ func LogRequest() gin.HandlerFunc {
 					return
 				}
 			}
+
 			excludeUrls := map[string]struct{}{}
 			if _, ok := excludeUrls[c.Request.RequestURI]; !ok {
 				if c.Request.Method != "POST" {

@@ -16,6 +16,7 @@ func ClientRequest(client *http.Client, method, url string, headers map[string]s
 	if err != nil {
 		return code, res, err
 	}
+
 	for k, v := range headers {
 		req.Header.Set(k, v)
 	}
@@ -24,7 +25,6 @@ func ClientRequest(client *http.Client, method, url string, headers map[string]s
 	if err != nil && response == nil {
 		return code, res, fmt.Errorf("error: %+v", err)
 	} else {
-		// Close the connection to reuse it
 		if response != nil {
 			defer response.Body.Close()
 			r, err := io.ReadAll(response.Body)
@@ -41,14 +41,12 @@ func PostForm(reqUrl string, content map[string]string) (int, []byte, error) {
 	}
 
 	resp, err := http.PostForm(reqUrl, data)
-
 	if resp != nil {
 		defer resp.Body.Close()
 	}
 	if err != nil {
 		return 0, nil, err
 	}
-	//r, err := ioutil.ReadAll(resp.Body)
 	r, err := io.ReadAll(resp.Body)
 	return resp.StatusCode, r, err
 }

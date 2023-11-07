@@ -23,7 +23,9 @@ func Init(ctx context.Context, cfg *conf.LogConfig) (err error) {
 	if err != nil {
 		return
 	}
+
 	L = zap.L()
+
 	go func() {
 		<-ctx.Done()
 		err = L.Sync()
@@ -31,19 +33,22 @@ func Init(ctx context.Context, cfg *conf.LogConfig) (err error) {
 			fmt.Println(err)
 		}
 	}()
+
 	return nil
 }
 
 func getEncoder(format string) zapcore.Encoder {
+
 	encodeConfig := zap.NewProductionEncoderConfig()
-	//EncodeTime eg: 2006-01-02T15:04:05.123+0800
 	encodeConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	encodeConfig.TimeKey = "time"
 	encodeConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 	encodeConfig.EncodeCaller = zapcore.ShortCallerEncoder
+
 	if strings.ToUpper(format) == "JSON" {
 		return zapcore.NewJSONEncoder(encodeConfig)
 	}
+
 	return zapcore.NewConsoleEncoder(encodeConfig)
 }
 
@@ -56,17 +61,20 @@ func getLogWriter(cfg *conf.LogConfig) zapcore.WriteSyncer {
 		MaxAge:     cfg.MaxAge,
 		Compress:   cfg.Compress,
 	}
+
 	syncFile := zapcore.AddSync(logRotate) // write to file
 	if cfg.ConsoleEnable {
 		syncConsole := zapcore.AddSync(os.Stdout) // write to std
 		return zapcore.NewMultiWriteSyncer(syncFile, syncConsole)
 	}
+
 	return zapcore.AddSync(logRotate)
 }
 
 func initLogger(cfg *conf.LogConfig) (err error) {
 	writeSyncer := getLogWriter(cfg)
 	encoder := getEncoder(cfg.Format)
+
 	level, err := zap.ParseAtomicLevel(cfg.Level)
 	if err != nil {
 		return err
@@ -76,5 +84,6 @@ func initLogger(cfg *conf.LogConfig) (err error) {
 	core := zapcore.NewCore(encoder, writeSyncer, AtomicLevel)
 	logger := zap.New(core, zap.AddCaller())
 	zap.ReplaceGlobals(logger)
+
 	return
 }

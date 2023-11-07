@@ -12,6 +12,7 @@ func AddResource(ctx context.Context, uid int, resourceTypeId string, name strin
 	if err != nil {
 		return
 	}
+
 	res = &Resource{}
 	url := fmt.Sprintf("%s/acl/resources", conf.Cfg.Auth.Acl.Url)
 	resp, err := RC.R().
@@ -32,6 +33,7 @@ func DeleteResource(ctx context.Context, resourceId int32) (err error) {
 	if err != nil {
 		return
 	}
+
 	url := fmt.Sprintf("%v/acl/resources/%v", conf.Cfg.Auth.Acl.Url, resourceId)
 	resp, err := RC.R().
 		SetHeader("App-Access-Token", token).
@@ -45,6 +47,7 @@ func UpdateResource(ctx context.Context, resourceId int, updates map[string]stri
 	if err != nil {
 		return
 	}
+
 	url := fmt.Sprintf("%s/acl/resources/%d", conf.Cfg.Auth.Acl.Url, resourceId)
 	resp, err := RC.R().
 		SetHeader("App-Access-Token", token).

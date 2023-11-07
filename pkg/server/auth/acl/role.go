@@ -40,6 +40,7 @@ func HasPermission(ctx context.Context, rid int32, resourceName, resourceTypeNam
 	if err != nil {
 		return false, err
 	}
+
 	data := make(map[string]any)
 	url := fmt.Sprintf("%s/acl/roles/has_perm", conf.Cfg.Auth.Acl.Url)
 	resp, err := RC.R().
@@ -55,6 +56,7 @@ func HasPermission(ctx context.Context, rid int32, resourceName, resourceTypeNam
 	if err = HandleErr(err, resp, func(dt map[string]any) bool { return true }); err != nil {
 		return
 	}
+
 	if v, ok := data["result"]; ok {
 		res = v.(bool)
 	}
@@ -66,6 +68,7 @@ func GrantRoleResource(ctx context.Context, roleId int32, resourceId int32, perm
 	if err != nil {
 		return
 	}
+
 	url := fmt.Sprintf("%s/acl/roles/%d/resources/%d/grant", conf.Cfg.Auth.Acl.Url, roleId, resourceId)
 	resp, err := RC.R().
 		SetHeader("App-Access-Token", token).
@@ -82,6 +85,7 @@ func RevokeRoleResource(ctx context.Context, roleId int32, resourceId int, permi
 	if err != nil {
 		return
 	}
+
 	url := fmt.Sprintf("%s/acl/roles/%d/resources/%d/revoke", conf.Cfg.Auth.Acl.Url, roleId, resourceId)
 	resp, err := RC.R().
 		SetHeader("App-Access-Token", token).

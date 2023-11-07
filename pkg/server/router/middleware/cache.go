@@ -83,7 +83,9 @@ func RCache(ctx context.Context, defaultExpire time.Duration) gin.HandlerFunc {
 				sfGroup.Forget(cacheKey)
 			})
 			defer forgetTimer.Stop()
+
 			c.Next()
+
 			inFlight = true
 			respCache := &responseCache{}
 			respCache.fillWithCacheWriter(cacheWriter)
@@ -110,6 +112,7 @@ func RSet(ctx context.Context, key string, value any, expire time.Duration) erro
 	if err != nil {
 		return err
 	}
+
 	_, err = redis.RC.SetEx(ctx, key, payload, expire).Result()
 	return err
 }
