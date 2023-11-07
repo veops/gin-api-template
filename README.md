@@ -86,12 +86,12 @@ go build -o server main.go
 
 ### Step 4. Validation
 > Verify any one of the following is normal.
-- **Service availability check.**, **Must-have as an API service.**
+- **Service availability check**, **Must-have as an API service**
 ```
 curl -X GET http://localhost:8080/-/health
 ```
 response is: `OK`
-- **Dynamically modify the log level.**. This API is convenient for adjusting the log output level dynamically without the need to restart the service, making it easier to troubleshoot issues when encountered.
+- **Dynamically modify the log level**. This API is convenient for adjusting the log output level dynamically without the need to restart the service, making it easier to troubleshoot issues when encountered.
 ```
 curl -X PUT localhost:8080/-/log/level -H "Content-Type: application/json" -d '{"level":"debug"}'
 ```
