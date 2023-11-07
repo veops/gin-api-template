@@ -29,7 +29,7 @@ func Cors() gin.HandlerFunc {
 
 		defer func() {
 			if err := recover(); err != nil {
-				logger.L.Sugar().Panicf("Panic info is: %v", err)
+				logger.L.Sugar().Errorf("Panic info is: %v", err)
 			}
 		}()
 

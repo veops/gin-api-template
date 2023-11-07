@@ -47,13 +47,15 @@ func getEncoder(format string) zapcore.Encoder {
 
 	if strings.ToUpper(format) == "JSON" {
 		return zapcore.NewJSONEncoder(encodeConfig)
+	} else {
+		encodeConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+		return zapcore.NewConsoleEncoder(encodeConfig)
 	}
-
-	return zapcore.NewConsoleEncoder(encodeConfig)
 }
 
-// getLogWriter define the rotate log config
-func getLogWriter(cfg *conf.LogConfig) zapcore.WriteSyncer {
+func getLogWriter(cfg *conf.LogConfig) zapcore.Core {
+	var cores []zapcore.Core
+
 	logRotate := &lumberjack.Logger{
 		Filename:   cfg.Path,
 		MaxSize:    cfg.MaxSize,
@@ -61,19 +63,20 @@ func getLogWriter(cfg *conf.LogConfig) zapcore.WriteSyncer {
 		MaxAge:     cfg.MaxAge,
 		Compress:   cfg.Compress,
 	}
-
-	syncFile := zapcore.AddSync(logRotate) // write to file
-	if cfg.ConsoleEnable {
-		syncConsole := zapcore.AddSync(os.Stdout) // write to std
-		return zapcore.NewMultiWriteSyncer(syncFile, syncConsole)
+	if cfg.Path != "" {
+		fileEncoder := getEncoder(cfg.Format)
+		cores = append(cores, zapcore.NewCore(fileEncoder, zapcore.AddSync(logRotate), AtomicLevel))
 	}
 
-	return zapcore.AddSync(logRotate)
+	if cfg.ConsoleEnable {
+		consoleEncoder := getEncoder("console")
+		cores = append(cores, zapcore.NewCore(consoleEncoder, zapcore.Lock(os.Stdout), AtomicLevel))
+	}
+
+	return zapcore.NewTee(cores...)
 }
 
 func initLogger(cfg *conf.LogConfig) (err error) {
-	writeSyncer := getLogWriter(cfg)
-	encoder := getEncoder(cfg.Format)
 
 	level, err := zap.ParseAtomicLevel(cfg.Level)
 	if err != nil {
@@ -81,7 +84,8 @@ func initLogger(cfg *conf.LogConfig) (err error) {
 	}
 	AtomicLevel.SetLevel(level.Level())
 
-	core := zapcore.NewCore(encoder, writeSyncer, AtomicLevel)
+	core := getLogWriter(cfg)
+
 	logger := zap.New(core, zap.AddCaller())
 	zap.ReplaceGlobals(logger)
 
