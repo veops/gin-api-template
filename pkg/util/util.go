@@ -36,6 +36,7 @@ func GetMacAddrs() (macAddrs []string) {
 	if err != nil {
 		return macAddrs
 	}
+
 	for _, netInterface := range netInterfaces {
 		macAddr := netInterface.HardwareAddr.String()
 		if len(macAddr) == 0 {

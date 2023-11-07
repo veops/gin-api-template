@@ -54,6 +54,7 @@ func resourceTypeName(resourceType string) string {
 func CreateGrantAcl(ctx context.Context, session *Session, resourceType string, now time.Time) (resourceId int32, err error) {
 	s := rand.New(rand.NewSource(time.Now().Unix())).Int31n(1000)
 	resourceName := strings.Join([]string{resourceType, now.Format(time.DateTime), cast.ToString(s)}, "-")
+
 	resource, err := AddResource(ctx,
 		session.GetUid(),
 		resourceTypeName(resourceType),
@@ -61,6 +62,7 @@ func CreateGrantAcl(ctx context.Context, session *Session, resourceType string, 
 	if err != nil {
 		return
 	}
+	
 	if err = GrantRoleResource(ctx, session.Acl.Rid, resource.ResourceId, AllPermissions); err != nil {
 		return
 	}

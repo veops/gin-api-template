@@ -19,7 +19,8 @@ log:
   path: app.log
   format: json
   maxSize: 1
-  consoleEnable: false
+  # consoleEnable Whether to enable outputting logs to the console as the sametime
+  consoleEnable: true
 
 #auth:
 #  acl:

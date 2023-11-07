@@ -1,13 +1,13 @@
 package router
 
 import (
-	"app/pkg/logger"
-	"app/pkg/server/router/middleware"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
+	"app/pkg/logger"
 	"app/pkg/server/controller"
+	"app/pkg/server/router/middleware"
 )
 
 var (

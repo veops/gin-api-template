@@ -43,6 +43,7 @@ func GetAclToken(ctx context.Context) (res string, err error) {
 	if err = HandleErr(err, resp, func(dt map[string]any) bool { return dt["token"] != "" }); err != nil {
 		return
 	}
+
 	res = data["token"]
 	_, err = redis.RC.SetNX(ctx, "aclToken", res, time.Hour).Result()
 	return
@@ -52,11 +53,13 @@ func HandleErr(err error, resp *resty.Response, isOk func(dt map[string]any) boo
 	if err != nil {
 		return err
 	}
+
 	dt := make(map[string]any)
 	err = json.Unmarshal(resp.Body(), &dt)
 	if err != nil {
 		return err
 	}
+
 	if resp.StatusCode() != 200 || !isOk(dt) {
 		pc, _, _, _ := runtime.Caller(1)
 		return fmt.Errorf("%s failed\n httpcode=%d resp=%s",

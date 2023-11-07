@@ -58,7 +58,7 @@ func (s *Signature) Unsign(signed string) (content []byte, err error) {
 	li := strings.LastIndex(signed, s.Sep)
 	value, sig := signed[:li], signed[li+len(s.Sep):]
 
-	if ok, _ := s.Verify(value, sig); ok{
+	if ok, _ := s.Verify(value, sig); ok {
 		//c, err := base64Decode(strings.Split(strings.Trim(value, "."), ".")[0])
 		var c []byte
 		c, err = base64.RawURLEncoding.DecodeString(strings.Split(strings.Trim(value, "."), ".")[0])
@@ -106,6 +106,7 @@ func (s *Signature) DeriveKey() (string, error) {
 	default:
 		key, err = "", errors.New("unknown key derivation method")
 	}
+
 	return key, err
 }
 
@@ -125,6 +126,7 @@ func NewSignature(secret, salt, sep, derivation string, digest func() hash.Hash,
 	if algo == nil {
 		algo = &HMACAlgorithm{DigestMethod: digest}
 	}
+
 	return &Signature{
 		SecretKey:     secret,
 		Salt:          salt,

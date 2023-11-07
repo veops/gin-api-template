@@ -23,6 +23,7 @@
 │   │   ├── config.example.yaml # 启动的配置文件样例
 │   │   └── server.go # 某子项目启动
 │   └── main.go # 项目启动的入口
+├── docs # 各种文档
 └── pkg  # 项目核心代码包 
     ├── conf
     │   └── conf.go # 全局的配置设置 
@@ -55,31 +56,50 @@
 ```
 
 ## 特点
-- 项目启动使用cobra进行命令行启动。
-- 使用yaml格式项目的配置文件
-- 日志采用zap进行日志输出，封装了日志的输出，日志轮转等
-- 封装了路由的配置router
-- 封装了多个middleware
+- 项目启动使用 **cobra** 进行命令行启动。
+- 使用 **yaml** 格式项目的配置文件
+- 日志采用zap进行日志输出，封装了 **日志输出**，**日志轮转**, **动态修改日志级别** 等
+- 封装 **路由配置** router
+- 封装了多个 **middleware**
 
 ## 快速开始
-### 第一步, 克隆项目
+### 第一步  克隆项目
 ```sh
 git clone git@github.com:veops/gin-api-template.git
 ```
-### 第二部, 修改配置
+### 第二步  修改配置
 ```sh
 cd gin-api-template/cmd
 cp apps/config.example.yaml apps/config.yaml 
 # 修改config.yaml中的配置
 ```
-### 第三部, 构建，运行项目
+
+### 第三步 构建、运行项目
 ```
 go build -o server main.go 
 ./server run -c apps
 ```
-### 第四部， 测试
-- 浏览器或者终端访问 http://localhost:8080/-/health 返回 `OK`
-- 访问 http://localhost:8080/api/v1/hello 返回
+
+### 第四步 验证
+> 以下验证任意一个正常
+- **服务可用性检查**, **作为API服务必须具备**
+```
+curl -X GET http://localhost:8080/-/health
+```
+返回: `OK`
+- **动态修改日志级别**。这个接口方便在遇到问题时，无需重启服务，动态调整日志的输出级别，方便排查问题。 
+```
+curl -X PUT localhost:8080/-/log/level -H "Content-Type: application/json" -d '{"level":"debug"}'
+```
+返回:
+```json
+{"level":"debug"}
+```
+- 普通api验证
+```shell
+curl -X GET http://localhost:8080/api/v1/hello
+```
+ 返回:
 ```json
 {
   "code":0,
@@ -114,5 +134,5 @@ go build -o server main.go
 ---
 _**欢迎关注公众号(维易科技OneOps)，关注后可加入微信群，进行产品和技术交流。**_
 
-![公众号: 维易科技OneOps](pkg/docs/images/wechat.jpg)
+![公众号: 维易科技OneOps](docs/images/wechat.jpg)
 

@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"log"
 	"net/http"
 	"runtime"
 
@@ -22,15 +21,18 @@ func Cors() gin.HandlerFunc {
 			c.Header("Access-Control-Max-Age", "172800")
 			c.Header("Access-Control-Allow-Credentials", "true")
 		}
+
 		if method == "OPTIONS" {
 			c.AbortWithStatus(http.StatusNoContent)
 			return
 		}
+
 		defer func() {
 			if err := recover(); err != nil {
-				log.Printf("Panic info is: %v", err)
+				logger.L.Sugar().Panicf("Panic info is: %v", err)
 			}
 		}()
+
 		c.Next()
 	}
 }
@@ -44,6 +46,7 @@ func RecoveryWithWriter() gin.HandlerFunc {
 				logger.L.Error(string(buf[:n]))
 			}
 		}()
+
 		c.Next()
 	}
 }
