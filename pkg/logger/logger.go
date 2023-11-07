@@ -56,14 +56,14 @@ func getEncoder(format string) zapcore.Encoder {
 func getLogWriter(cfg *conf.LogConfig) zapcore.Core {
 	var cores []zapcore.Core
 
-	logRotate := &lumberjack.Logger{
-		Filename:   cfg.Path,
-		MaxSize:    cfg.MaxSize,
-		MaxBackups: cfg.MaxAge,
-		MaxAge:     cfg.MaxAge,
-		Compress:   cfg.Compress,
-	}
 	if cfg.Path != "" {
+		logRotate := &lumberjack.Logger{
+			Filename:   cfg.Path,
+			MaxSize:    cfg.MaxSize,
+			MaxBackups: cfg.MaxBackups,
+			MaxAge:     cfg.MaxAge,
+			Compress:   cfg.Compress,
+		}
 		fileEncoder := getEncoder(cfg.Format)
 		cores = append(cores, zapcore.NewCore(fileEncoder, zapcore.AddSync(logRotate), AtomicLevel))
 	}
