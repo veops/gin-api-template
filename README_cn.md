@@ -24,14 +24,15 @@
 │   │   └── server.go # 某子项目启动
 │   └── main.go # 项目启动的入口
 ├── docs # 各种文档
+│   └── images
 └── pkg  # 项目核心代码包 
     ├── conf
     │   └── conf.go # 全局的配置设置 
-    ├── docs # 各种文档
     ├── logger # 日志的设置
     ├── server # 项目的核心逻辑块， 如果是多个子模块，可以建多个不同的目录，这里示例中建立一个server目录
     │   ├── auth # 认证模块 
     │   │   └── acl # 默认的acl认证
+    │   │   └── ... # 其他认证方式如  ldap 
     │   ├── controller # 控制器模块
     │   │   ├── controller.go # 一个全局controller的定义
     │   │   └── hello.go # 一个api样例，每种类型的api接口，建立一个单独的文件，这样条理比较清晰 
